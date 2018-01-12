@@ -1,4 +1,4 @@
-version: '2'
+version: '3.4'
 
 services:
 
@@ -7,28 +7,18 @@ services:
       context: elasticsearch/
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - $HOME/ElasticSearchData:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ES_JAVA_OPTS: "-Xmx8G -Xms8G"
     networks:
       - elk
-
-  logstash:
-    build:
-      context: logstash/
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-    ports:
-      - "5000:5000"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
-    depends_on:
-      - elasticsearch
+    logging: &logging
+      options:
+        max-size: "10m"
+        max-file: "1"
 
   kibana:
     build:
@@ -41,6 +31,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    logging: *logging
 
 networks:
 
