@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
+set -e
 docker-compose stop
-docker-compose config && docker-compose up -d
+docker-compose config && docker-compose build && docker-compose up -d
